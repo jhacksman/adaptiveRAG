@@ -103,7 +103,6 @@ prompt = PromptTemplate(
 question_router = prompt | llm | JsonOutputParser()
 
 question = "llm agent memory"
-retriever = vectorstore.as_retriever()
 docs = retriever.get_relevant_documents(question)
 doc_txt = docs[1].page_content
 question_router.invoke({"question": question})
