@@ -424,14 +424,13 @@ workflow.add_conditional_edges(
 app = workflow.compile()
 
 inputs = {"question": user_input}
-    for output in app.stream(inputs):
-        for key, value in output.items():
-            # Node
-            st.write(f"Node '{key}':")
-            # Optional: print full state at each node
-            # pprint.pprint(value["keys"], indent=2, width=80, depth=None)
-        print("\n---\n")
+for output in app.stream(inputs):
+    for key, value in output.items():
+        # Node
+        st.write(f"Node '{key}':")
+        # Optional: print full state at each node
+        # pprint.pprint(value["keys"], indent=2, width=80, depth=None)
+    print("\n---\n")
 
 # Final generation
 st.write(value["generation"])
-
