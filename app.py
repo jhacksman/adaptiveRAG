@@ -60,7 +60,7 @@ text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
 text_chunks = text_splitter.split_documents(data)
 
     # Add to vectorDB
-    vectorstore = Chroma.from_documents(
+vectorstore = Chroma.from_documents(
         documents=text_chunks,
         collection_name="rag-chroma",
         embedding=GPT4AllEmbeddings(),
