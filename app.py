@@ -92,8 +92,6 @@ prompt = PromptTemplate(
         input_variables=["question"],
 )
 
-from langchain.output_parsers import JsonOutputParser
-
 output_schema = '''
 {
     "type": "object",
