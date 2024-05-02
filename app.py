@@ -57,7 +57,7 @@ if process:
 text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=250, chunk_overlap=0
     )
-    text_chunks = text_splitter.split_documents(data)
+text_chunks = text_splitter.split_documents(data)
 
     # Add to vectorDB
     vectorstore = Chroma.from_documents(
