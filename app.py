@@ -66,7 +66,7 @@ vectorstore = Chroma.from_documents(
         embedding=GPT4AllEmbeddings(),
     )
 retriever = vectorstore.as_retriever()
-    llm = ChatOllama(model=local_llm, format="json", temperature=0)
+llm = ChatOllama(model=local_llm, format="json", temperature=0)
 
  prompt = PromptTemplate(
         template="""You are an expert at routing a user question to a vectorstore or web search. \n
