@@ -1,0 +1,10 @@
+streamlit
+langchain
+langchain_community
+langgraph
+langchain_core
+chromadb
+gpt4all
+tavily-python
+typing_extensions
+pypdf
