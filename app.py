@@ -65,7 +65,7 @@ vectorstore = Chroma.from_documents(
         collection_name="rag-chroma",
         embedding=GPT4AllEmbeddings(),
     )
-    retriever = vectorstore.as_retriever()
+retriever = vectorstore.as_retriever()
     llm = ChatOllama(model=local_llm, format="json", temperature=0)
 
  prompt = PromptTemplate(
