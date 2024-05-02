@@ -60,6 +60,7 @@ text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
 text_chunks = text_splitter.split_documents(data)
 
 # Add to vectorDB
+data = [page.extract_text() for pdf in st.session_state.uploaded_files for page in PdfFileReader(pdf).pages]
 vectorstore = Chroma.from_documents(
         documents=text_chunks,
         collection_name="rag-chroma",
