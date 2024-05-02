@@ -15,7 +15,9 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_community.document_loaders import PyPDFLoader
 
 # Section 1: Setup the local LLM and API key for Tavily search engine, set title and input for Streamlit
-local_llm = "llama3"
+local_llm = "dolphin-llama3:8b"
+llm = ChatOllama(model=local_llm, format="json", temperature=0)
+
 try:
     tavily_api_key = os.environ['TAVILY_API_KEY']
 except KeyError:
