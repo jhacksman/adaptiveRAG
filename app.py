@@ -100,20 +100,7 @@ prompt = PromptTemplate(
         input_variables=["question"],
 )
 
-output_schema = '''
-{
-    "type": "object",
-    "properties": {
-        "datasource": {
-            "type": "string",
-            "enum": ["web_search", "vectorstore"]
-        }
-    },
-    "required": ["datasource"]
-}
-'''
-
-question_router = prompt | llm | JsonOutputParser(output_schema)
+question_router = prompt | llm | JsonOutputParser()
 
 question = "llm agent memory"
 docs = retriever.get_relevant_documents(question)
