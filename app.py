@@ -117,7 +117,7 @@ inputs = {"question": user_input}
 for output in app.stream(inputs):
 
 # Workflow setup (continued)
-workflow = StateGraph(GraphState)
+    workflow = StateGraph(GraphState)
 
 # ... workflow nodes and graph building (as provided before)
 
