@@ -31,10 +31,6 @@ with st.sidebar:
 
 # Section 2: Process the PDF files upon button click
 if process:
-    if not uploaded_files:
-        st.warning("Please upload at least one PDF file.")
-        st.stop()
-    
     # Ensure the directory exists
     temp_dir = os.path.expanduser('~/adaptiverag/temp/')
     try:
@@ -62,6 +58,25 @@ if process:
                 loader = PyPDFLoader(temp_file_path)
                 data = loader.load()
                 st.write(f"Data loaded for {uploaded_file.name}")
+
+                # Process text data from PDF
+                text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+                    chunk_size=250, chunk_overlap=0
+                )
+                text_chunks = text_splitter.split_documents(data)
+
+                # Add to vectorDB
+                vectorstore = Chroma.from_documents(
+                    documents=text_chunks,
+                    collection_name="rag-chroma",
+                    embedding=GPT4AllEmbeddings()
+                )
+                retriever = vectorstore.as_retriever()
+
+                # Set up the chat model
+                llm = ChatOllama(model=local_llm, format="json", temperature=0)
+                # You can now use `llm` to handle queries or further interactions
+
             except Exception as e:
                 st.error(f"Failed to load {uploaded_file.name}: {str(e)}")
         except Exception as e:
