@@ -99,7 +99,7 @@ doc_txt = docs[1].page_content
 question_router.invoke({"question": question})
 llm = ChatOllama(model=local_llm, format="json", temperature=0)
 
-we use PromptTemplate for grading the relevance of a document about a user’s question. to determine whether the document contains keywords related to the question and to provide a binary score (‘yes’ or ‘no’) indicating relevance, which is returned in a simple JSON format with the key ‘score’.
+# we use PromptTemplate for grading the relevance of a document about a user’s question. to determine whether the document contains keywords related to the question and to provide a binary score (‘yes’ or ‘no’) indicating relevance, which is returned in a simple JSON format with the key ‘score’.
 
 prompt = PromptTemplate(
         template="""You are a grader assessing relevance of a retrieved document to a user question. \n 
