@@ -59,7 +59,7 @@ text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
     )
 text_chunks = text_splitter.split_documents(data)
 
-    # Add to vectorDB
+# Add to vectorDB
 vectorstore = Chroma.from_documents(
         documents=text_chunks,
         collection_name="rag-chroma",
@@ -68,7 +68,7 @@ vectorstore = Chroma.from_documents(
 retriever = vectorstore.as_retriever()
 llm = ChatOllama(model=local_llm, format="json", temperature=0)
 
- prompt = PromptTemplate(
+prompt = PromptTemplate(
         template="""You are an expert at routing a user question to a vectorstore or web search. \n
         Use the vectorstore for questions on LLM  agents, prompt engineering, and adversarial attacks. \n
         You do not need to be stringent with the keywords in the question related to these topics. \n
@@ -84,195 +84,6 @@ docs = retriever.get_relevant_documents(question)
 doc_txt = docs[1].page_content
 question_router.invoke({"question": question})
 llm = ChatOllama(model=local_llm, format="json", temperature=0)
-
-
-Home Blog
-LangGraph + Adaptive Rag + LLama3 Python Project: Easy AI/Chat for your Docs
-Gao Dalie (高達烈)	by Gao Dalie (高達烈)	
-April 30, 2024
-in Blog	
-0
-adaptive rag
-0
-SHARES
-69
-VIEWS
-Share on Facebook
-Share on Twitter
-
-in this post, I have a super quick tutorial for you showing how to create a fully local chatbot with LangGraph, Adaptive Rag and LLama3 to make a powerful Agent Chatbot for your business or personal use.
-
-Adaptive RAG is a cool paper that dynamically selects the best RAG strategy based on query complexity.
-
-and Llama 3 is the latest model in the Llama series published by Meta and is designed to be the best open-source model with performance comparable to the best-closed models currently available.
-
-In this post, we’re going to look closely at what adaptive Rag, how the adaptive Retrieval Augmented Generation process works, and how Llama 3 7B and 70B stack up against other models working in “instruct” mode.
-
-Table of Contents
-
-    Before we start! 🦸🏻‍♀️
-    What is Adaptive RAG :
-    How does Adaptive RAG work?
-    how does Llama 3 7B and 70B stack up against other models working in “instruct” mode?
-        Let’s Start Coding
-
-Before we start! 🦸🏻‍♀️
-
-If you like this topic and you want to support me:
-
-    Clap my article 50 times; that will really help me out.👏
-    Follow me on Medium and subscribe to get my latest article🫶
-    Follow me on my YouTube channel
-
-What is Adaptive RAG :
-
-Adaptive Rag is introduced as a novel framework that employs a classifier to dynamically select the most appropriate strategy for handling queries based on their complexity. this adaptive approach tailors the retrieval process to the specific needs of each query, balancing computational efficiency with accuracy.
-How does Adaptive RAG work?
-
-The Adaptive Rag framework employs a classifier to dynamically choose the best strategy for Large Language Models based on query complexity. This process begins with a smaller model trained to classify queries into different complexity levels using automatically annotated datasets. These datasets are created by combining predicted outcomes from different models and inherent biases found in existing data.
-
-Once the classifier predicts the complexity of an incoming query, the Adaptive-RAG framework determines whether to use iterative retrieval, single-step retrieval, or non-retrieval LLMs to provide an answer.
-
-This dynamic selection approach improves efficiency by assigning more resources for complex queries and enhances accuracy by matching the Best strategy to each task.
-
-The framework can decide the most effective processing strategy by allocating a complexity label to each query. This adaptability allows for a more flexible system, offering better performance than rigid, one-size-fits-all approaches.
-
-The result is a more efficient and responsive Question-Answer framework, capable of handling a wide range of query complexities with precision and speed.
-how does Llama 3 7B and 70B stack up against other models working in “instruct” mode?
-
-Meta developed great language models to innovate, extend, and optimize for simplicity by focusing on four elements:
-
-‘model architecture,’ ‘pre-training data,’ ‘scaling up pre-training,’ and ‘fine-tuning instructions.’
-
-Llama 3 uses a relatively standard decoder-only transformer architecture as its language model. Although not revolutionary, it employs a tokenizer with a vocabulary of 128,000 tokens, allowing it to encode language more efficiently, significantly improving its performance compared to Llama 2. It also uses grouped query attention (GQA) across 8B and 70B sizes to improve inference efficiency in Llama 3.
-
-Meta has invested heavily in pre-training data for Llama 3, using over 15 trillion tokens, all collected from public sources. This is about seven times larger than the Llama 2 training data and contains about four times more code. Meta has developed efficient data usage and optimal training strategies to scale up the pre-training of Llama 3 models.
-
-During this process, detailed scaling laws were established to predict model performance and optimize computing resources. For example, an 8B parameter model requires an optimal training complexity of approximately 200 billion tokens. Still, it has been found that further improvement can be seen by training up to 15 trillion tokens.
-
-An innovative approach to instruction tuning was introduced to fine-tune the pre-trained model specifically for the chat use case. This approach combines supervised fine-tuning (SFT), rejection sampling, proximity policy optimization (PPO), and direct policy optimization (DPO).
-
-By learning priority rankings via PPO and DPO, Meta can better choose how to generate answers, significantly improving performance in inference and coding tasks.
-Let’s Start Coding
-
-Before we can work with langGraph, Adaptive Rag and perform actions on your text data. we must import various libraries and packages. Here’s a list of the libraries and their purposes:
-
-        Langchain: This is the main library that provides access to Langchain functionalities.
-
-    LangChain_Community contains third-party integrations that implement the base interfaces defined in LangChain Core,
-    langchain_core: compiles LCEL sequences to an optimized execution plan, with automatic parallelization, streaming, tracing, and async support
-    Chroma: Part of the Vector store used for storing text embeddings.
-    LangGraph: an alpha-stage library for building stateful, multi-actor applications with LLMs
-    Streamlit: lets you transform Python scripts into interactive web apps in minutes.
-    gpt4all: an ecosystem to train and deploy powerful and customized large language models that run locally on consumer-grade CPUs
-    tavily-python: Search API is a search engine optimized for LLMs and RAG
-    TextSplitter: A tool to split large documents into smaller, more manageable chunks.
-    Ollama: allows you to run open-source large language models, such as Llama 3 locally.
-
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import GPT4AllEmbeddings
-from langchain.prompts import PromptTemplate
-from langchain_community.chat_models import ChatOllama
-from langchain_core.output_parsers import JsonOutputParser
-from langchain.prompts import PromptTemplate
-from langchain_community.chat_models import ChatOllama
-from langchain_core.output_parsers import JsonOutputParser
-from langchain import hub
-from langchain_community.chat_models import ChatOllama
-from langchain_core.output_parsers import StrOutputParser
-from typing_extensions import TypedDict
-from typing import List
-from langchain.schema import Document
-from langgraph.graph import END, StateGraph
-from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain.schema import Document
-from langchain_community.document_loaders import PyPDFLoader
-import streamlit as st
-import os
-
-We set up a variable named local_llm and assigned it the value ‘llama3’. Then, we set an environment variable Tavily API with an API key.
-
-We use Streamlit’s function st.title to set the title of the web page. Afterwards, we created a text input field on the web page where users can enter a question. Additionally, we added a file uploader sidebar.
-
- Inside the sidebar, this line adds a file uploader tool, set to accept only PDF files. Finally, we added a button labelled ‘Process’ to process the uploaded PDF files.
-
-local_llm = "llama3"
-tavily_api_key = os.environ['TAVILY_API_KEY'] = 'API_KEY'
-st.title("Multi-PDF ChatBot using LLAMA3 & Adaptive RAG")
-user_input = st.text_input("Question:", placeholder="Ask about your PDF", key='input')
-
-with st.sidebar:
-    uploaded_files = st.file_uploader("Upload your file", type=['pdf'], accept_multiple_files=True)
-    process = st.button("Process")
-if process:
-    if not uploaded_files:
-        st.warning("Please upload at least one PDF file.")
-        st.stop()
-
-We set up a variable named temp_dir and assign it the path of a directory on the computer where temporary files will be stored. Then, we check if the directory specified by temp_dir exists on the computer. If the directory does not exist, this function creates it.
-
-Next, we start a loop that will go through each file uploaded by the user. For each file, we construct the full path where the uploaded file will be saved by joining the temporary directory path and the file’s name. We then open a file at the path specified by temp_file_path and write the content of the uploaded file to the disk.
-
- Afterwards, we initialize a new instance of PyPDFLoader with the path to the saved file. Finally, we use the loader to read the PDF file and store its content in the variable ‘Data’.
-
-# Ensure the temp directory exists
-    temp_dir = 'C:/temp/'
-    if not os.path.exists(temp_dir):
-        os.makedirs(temp_dir)
-
-    # Process each uploaded file
-    for uploaded_file in uploaded_files:
-        temp_file_path = os.path.join(temp_dir, uploaded_file.name)
-        
-        # Save the file to disk
-        with open(temp_file_path, "wb") as file:
-            file.write(uploaded_file.getbuffer())  # Use getbuffer() for Streamlit's UploadedFile
-        
-        # Load the PDF using PyPDFLoader
-        try:
-            loader = PyPDFLoader(temp_file_path)
-            data = loader.load()  # Assuming loader.load() is the correct method call
-            st.write(f"Data loaded for {uploaded_file.name}")
-        except Exception as e:
-            st.error(f"Failed to load {uploaded_file.name}: {str(e)}")
-
-We create a RecursiveCharacterTextSplitter instance, configuring it with a chunk_size of 250 and a chunk_overlap value of zero. We will utilize the split_text method, which requires a string input representing the text and returns an array of strings, each representing a chunk after the splitting process. Now that we have the data chunks, let’s store them in our Vector Database. I am using the GPT4AllEmbeddings; feel free to use your preference.
-
-text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=250, chunk_overlap=0
-    )
-    text_chunks = text_splitter.split_documents(data)
-
-    # Add to vectorDB
-    vectorstore = Chroma.from_documents(
-        documents=text_chunks,
-        collection_name="rag-chroma",
-        embedding=GPT4AllEmbeddings(),
-    )
-    retriever = vectorstore.as_retriever()
-    llm = ChatOllama(model=local_llm, format="json", temperature=0)
-
-We use PromptTemplate to create a template for a string prompt. that instructs an expert system on how to decide whether a user’s question should be directed to a vectorstore or a web search. Then, we set up a pipeline that uses the previously defined prompt as input, processes it through an unspecified LLM, and defines a sample question about LLM agent memory. Finally, the pipeline extracts the content of the second retrieved document
-
- prompt = PromptTemplate(
-        template="""You are an expert at routing a user question to a vectorstore or web search. \n
-        Use the vectorstore for questions on LLM  agents, prompt engineering, and adversarial attacks. \n
-        You do not need to be stringent with the keywords in the question related to these topics. \n
-        Otherwise, use web-search. Give a binary choice 'web_search' or 'vectorstore' based on the question. \n
-        Return the a JSON with a single key 'datasource' and no premable or explaination. \n
-        Question to route: {question}""",
-        input_variables=["question"],
-)
-
-question_router = prompt | llm | JsonOutputParser()
-question = "llm agent memory"
-docs = retriever.get_relevant_documents(question)
-doc_txt = docs[1].page_content
-question_router.invoke({"question": question})
-llm = ChatOllama(model=local_llm, format="json", temperature=0)
-
-Also, we use PromptTemplate for grading the relevance of a document about a user’s question. to determine whether the document contains keywords related to the question and to provide a binary score (‘yes’ or ‘no’) indicating relevance, which is returned in a simple JSON format with the key ‘score’.
 
 prompt = PromptTemplate(
         template="""You are a grader assessing relevance of a retrieved document to a user question. \n 
@@ -621,6 +432,6 @@ inputs = {"question": user_input}
             # pprint.pprint(value["keys"], indent=2, width=80, depth=None)
         print("\n---\n")
 
-    # Final generation
-    st.write(value["generation"])
+# Final generation
+st.write(value["generation"])
 
